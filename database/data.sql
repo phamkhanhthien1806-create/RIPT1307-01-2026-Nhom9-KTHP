@@ -214,7 +214,7 @@ CREATE TABLE notifications (
 
 -- =========================================================================
 -- PHẦN DỮ LIỆU MẪU
--- Password mặc định đã băm bcrypt cho chuỗi 'password123'
+-- Password mặc định đã băm bcrypt cho chuỗi 'password'
 -- =========================================================================
 
 START TRANSACTION;
@@ -250,10 +250,10 @@ INSERT INTO users (id, full_name, email, password, phone, role, status) VALUES
 
 -- 2. BẢNG student_profiles (25 Students, không có cho Admin ID 1)
 INSERT INTO student_profiles (id, user_id, birthday, gender, address, avatar) VALUES
-(1, 2, '2002-05-15', 'nữ', '12 Đường Láng, Đống Đa, Hà Nội', '/uploads/avatars/student_2.jpg'),
-(2, 3, '2001-08-20', 'nam', '45 Nguyễn Hữu Cảnh, Bình Thạnh, TP. Hồ Chí Minh', '/uploads/avatars/student_3.jpg'),
-(3, 4, '2003-12-01', 'nữ', '78 Trần Phú, Hải Châu, Đà Nẵng', '/uploads/avatars/student_4.jpg'),
-(4, 5, '2000-03-10', 'nam', '23 Lê Lợi, Ngô Quyền, Hải Phòng', '/uploads/avatars/student_5.jpg'),
+(1, 2, '2002-05-15', 'nữ', '12 Đường Láng, Đống Đa, Hà Nội', '/uploads/avatars/student_2.png'),
+(2, 3, '2001-08-20', 'nam', '45 Nguyễn Hữu Cảnh, Bình Thạnh, TP. Hồ Chí Minh', '/uploads/avatars/student_3.png'),
+(3, 4, '2003-12-01', 'nữ', '78 Trần Phú, Hải Châu, Đà Nẵng', '/uploads/avatars/student_4.png'),
+(4, 5, '2000-03-10', 'nam', '23 Lê Lợi, Ngô Quyền, Hải Phòng', '/uploads/avatars/student_5.png'),
 (5, 6, '2002-07-25', 'nữ', '156 Đường 30 Tháng 4, Ninh Kiều, Cần Thơ', '/uploads/avatars/student_6.jpg'),
 (6, 7, '2001-11-30', 'nam', '89 Quang Trung, Gò Vấp, TP. Hồ Chí Minh', '/uploads/avatars/student_7.jpg'),
 (7, 8, '2004-02-14', 'nam', '54 Phố Huế, Hai Bà Trưng, Hà Nội', '/uploads/avatars/student_8.jpg'),
