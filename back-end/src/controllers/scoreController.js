@@ -40,13 +40,21 @@ export const upsertScore = async (req, res) => {
     }
     if (score < 0 || score > 10) return res.status(400).json({ message: "Điểm phải trong khoảng 0 - 10" });
 
+    const [enrollmentCheck] = await pool.query(
+      "SELECT id FROM enrollments WHERE student_id = ? AND class_id = ? AND status = 'đã duyệt'",
+      [student_id, class_id]
+    );
+
+    if (enrollmentCheck.length === 0) {
+      return res.status(400).json({ message: "Học viên này chưa được duyệt tham gia lớp học" });
+    }
+
     await pool.query(`
       INSERT INTO scores (student_id, class_id, score, comment)
       VALUES (?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE score = VALUES(score), comment = VALUES(comment)
     `, [student_id, class_id, score, comment || null]);
 
-    // Thông báo cho học viên
     await pool.query(
       "INSERT INTO notifications (user_id, title, message) VALUES (?, ?, ?)",
       [student_id, "Điểm số mới được cập nhật", `Điểm của bạn tại lớp ID ${class_id} đã được cập nhật: ${score}.`]
