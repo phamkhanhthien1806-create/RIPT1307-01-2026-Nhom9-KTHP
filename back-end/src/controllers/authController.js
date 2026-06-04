@@ -23,13 +23,11 @@ export const login = async (req, res) => {
       return res.status(403).json({ message: "Tài khoản của bạn đã bị khóa" });
     }
 
-    let isMatch = false;
-    try {
-      isMatch = await bcrypt.compare(password, user.password);
-    } catch (err) {
-      const compatPassword = user.password.replace(/^\$2y\$/, "$2a$");
-      isMatch = await bcrypt.compare(password, compatPassword);
-    }
+    const hashToCompare = user.password.startsWith("$2y$")
+      ? user.password.replace(/^\$2y\$/, "$2a$")
+      : user.password;
+    const isMatch = await bcrypt.compare(password, hashToCompare);
+
 
     if (!isMatch) {
       return res.status(401).json({ message: "Email hoặc mật khẩu không chính xác" });

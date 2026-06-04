@@ -14,6 +14,7 @@ import studentRoutes from "./routes/studentRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import statsRoutes from "./routes/statsRoutes.js";
+import lessonRoutes from "./routes/lessonRoutes.js";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use("/api/students", studentRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/lessons", lessonRoutes);
 
 const port = process.env.PORT || 5000;
 
