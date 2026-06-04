@@ -20,7 +20,7 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
-// Khôi phục từ localStorage nếu có
+
 const savedToken = localStorage.getItem("token");
 const savedUser = localStorage.getItem("user");
 
