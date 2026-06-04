@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Avatar, Dropdown, Badge, Popover, List, Button, Drawer, Typography } from "antd";
+import { Layout, Menu, Avatar, Dropdown, Badge, Popover, List, Button, Drawer, Typography, Tooltip, message } from "antd";
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -15,6 +15,8 @@ import {
   FileTextOutlined,
   NotificationOutlined,
   SmileOutlined,
+  SyncOutlined,
+  CheckOutlined,
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -24,6 +26,23 @@ import api from "../utils/api";
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
+
+const formatTimeAgo = (dateStr: string) => {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 1) return "Vừa xong";
+  if (diffMins < 60) return `${diffMins} phút trước`;
+  if (diffHours < 24) return `${diffHours} giờ trước`;
+  if (diffDays === 1) return "Một ngày trước";
+  if (diffDays < 7) return `${diffDays} ngày trước`;
+  
+  return date.toLocaleDateString("vi-VN");
+};
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -78,6 +97,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     }
   };
 
+  const handleRefresh = async () => {
+    try {
+      await fetchNotifications();
+      message.success("Đã làm mới danh sách thông báo");
+      if (location.pathname.endsWith("/notifications")) {
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error("Lỗi làm mới thông báo:", err);
+      message.error("Không thể làm mới thông báo");
+    }
+  };
+
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
@@ -101,7 +133,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       return [
         { key: "/student/dashboard", icon: <DashboardOutlined />, label: <Link to="/student/dashboard">Bảng điều khiển</Link> },
         { key: "/student/courses", icon: <BookOutlined />, label: <Link to="/student/courses">Đăng ký Khóa học</Link> },
-        { key: "/student/classes", icon: <CalendarOutlined />, label: <Link to="/student/classes">Lớp học của tôi</Link> },
+        { key: "/student/classes", icon: <TeamOutlined />, label: <Link to="/student/classes">Lớp học của tôi</Link> },
+        { key: "/student/schedule", icon: <CalendarOutlined />, label: <Link to="/student/schedule">Lịch học cá nhân</Link> },
         { key: "/student/scores", icon: <FileTextOutlined />, label: <Link to="/student/scores">Điểm số của tôi</Link> },
         { key: "/student/payments", icon: <CreditCardOutlined />, label: <Link to="/student/payments">Học phí của tôi</Link> },
         { key: "/student/profile", icon: <UserOutlined />, label: <Link to="/student/profile">Hồ sơ cá nhân</Link> },
@@ -125,6 +158,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     if (path.startsWith("/student/dashboard")) return "/student/dashboard";
     if (path.startsWith("/student/courses")) return "/student/courses";
     if (path.startsWith("/student/classes") || path.startsWith("/student/lessons")) return "/student/classes";
+    if (path.startsWith("/student/schedule")) return "/student/schedule";
     if (path.startsWith("/student/scores")) return "/student/scores";
     if (path.startsWith("/student/payments")) return "/student/payments";
     if (path.startsWith("/student/profile")) return "/student/profile";
@@ -154,45 +188,125 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
 
   const notificationContent = (
-    <div style={{ width: "300px", maxHeight: "400px", overflowY: "auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", borderBottom: "1px solid #f0f0f0", paddingBottom: "8px" }}>
-        <Text strong>Thông báo mới nhận</Text>
-        {unreadCount > 0 && (
-          <Button type="link" size="small" onClick={handleMarkReadAll} style={{ padding: 0 }}>
-            Đọc tất cả
-          </Button>
-        )}
-      </div>
-      <List
-        dataSource={notifications}
-        renderItem={(item) => (
-          <List.Item
-            style={{
-              padding: "8px 4px",
-              backgroundColor: item.is_read ? "transparent" : "#e6f7ff",
-              cursor: "pointer",
-            }}
-            onClick={() => !item.is_read && handleMarkRead(item.id)}
-          >
-            <List.Item.Meta
-              title={
-                <span style={{ fontSize: "14px", fontWeight: item.is_read ? "normal" : "bold" }}>
-                  {item.title}
-                </span>
-              }
-              description={
-                <div>
-                  <div style={{ fontSize: "12px", color: "#595959" }}>{item.message}</div>
-                  <div style={{ fontSize: "10px", color: "#bfbfbf", marginTop: "4px" }}>
-                    {new Date(item.created_at).toLocaleString("vi-VN")}
-                  </div>
-                </div>
-              }
+    <div style={{ width: "350px", maxHeight: "450px", display: "flex", flexDirection: "column" }}>
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "8px",
+          borderBottom: "1px solid #f0f0f0",
+          paddingBottom: "8px",
+        }}
+      >
+        <Text strong style={{ fontSize: "15px" }}>
+          Thông báo của tôi ({notifications.length})
+        </Text>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Tooltip title="Làm mới">
+            <Button
+              type="link"
+              icon={<SyncOutlined />}
+              onClick={handleRefresh}
+              style={{
+                padding: 0,
+                width: "auto",
+                minWidth: "auto",
+                height: "auto",
+                border: "none",
+                color: "#1890ff",
+              }}
             />
-          </List.Item>
-        )}
-        locale={{ emptyText: "Không có thông báo nào" }}
-      />
+          </Tooltip>
+          <Tooltip title="Đánh dấu tất cả là đã đọc">
+            <Button
+              type="link"
+              onClick={handleMarkReadAll}
+              disabled={unreadCount === 0}
+              style={{
+                padding: 0,
+                width: "auto",
+                minWidth: "auto",
+                height: "auto",
+                border: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                marginLeft: "12px",
+              }}
+            >
+              <CheckOutlined style={{ fontSize: "14px", color: unreadCount > 0 ? "#1890ff" : "#d9d9d9" }} />
+              <CheckOutlined style={{ fontSize: "14px", color: unreadCount > 0 ? "#1890ff" : "#d9d9d9", marginLeft: "-6px" }} />
+            </Button>
+          </Tooltip>
+        </div>
+      </div>
+
+      {/* Body List */}
+      <div style={{ overflowY: "auto", flex: 1, maxHeight: "350px" }}>
+        <List
+          dataSource={notifications}
+          renderItem={(item) => (
+            <List.Item
+              style={{
+                padding: "12px 4px",
+                borderBottom: "1px solid #f0f0f0",
+                cursor: "pointer",
+                display: "block",
+              }}
+              onClick={() => !item.is_read && handleMarkRead(item.id)}
+            >
+              <div
+                style={{
+                  fontSize: "13px",
+                  fontWeight: item.is_read ? "normal" : "600",
+                  color: item.is_read ? "#595959" : "#1890ff",
+                  lineHeight: "1.4",
+                  marginBottom: "4px",
+                }}
+              >
+                {item.title}
+              </div>
+              <div style={{ fontSize: "12px", color: "#8c8c8c", lineHeight: "1.4" }}>
+                {item.message}
+              </div>
+              <div
+                style={{
+                  textAlign: "right",
+                  fontSize: "11px",
+                  color: "#bfbfbf",
+                  fontStyle: "italic",
+                  marginTop: "6px",
+                }}
+              >
+                {formatTimeAgo(item.created_at)}
+              </div>
+            </List.Item>
+          )}
+          locale={{ emptyText: "Không có thông báo nào" }}
+        />
+      </div>
+
+      {/* Footer */}
+      <div
+        style={{
+          borderTop: "1px solid #f0f0f0",
+          paddingTop: "8px",
+          marginTop: "4px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          type="link"
+          size="small"
+          style={{ padding: 0, color: "#1890ff" }}
+          onClick={() => navigate(isTeacherOrAdmin ? "/admin/notifications" : "/student/notifications")}
+        >
+          Xem tất cả
+        </Button>
+      </div>
     </div>
   );
 
@@ -256,6 +370,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         placement="left"
         onClose={() => setMobileVisible(false)}
         visible={mobileVisible}
+        open={mobileVisible}
+        destroyOnClose={true}
         bodyStyle={{ padding: 0, backgroundColor: "#001529" }}
         headerStyle={{ borderBottom: "1px solid #002140", backgroundColor: "#001529" }}
         drawerStyle={{ color: "#fff" }}
