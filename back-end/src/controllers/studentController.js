@@ -2,7 +2,7 @@ import pool from "../config/db.js";
 
 export const getStudents = async (req, res) => {
   try {
-    const { search, status } = req.query;
+    const { search, status, course_id, class_id } = req.query;
     let query = `
       SELECT u.id, u.full_name, u.email, u.phone, u.status, u.created_at,
              sp.birthday, sp.gender, sp.avatar,
@@ -10,15 +10,40 @@ export const getStudents = async (req, res) => {
       FROM users u
       LEFT JOIN student_profiles sp ON u.id = sp.user_id
       LEFT JOIN enrollments e ON u.id = e.student_id
-      WHERE u.role = 'học viên'
     `;
+
+    const joins = [];
+    const conditions = ["u.role = 'học viên'"];
     const params = [];
+
+    if (course_id) {
+      joins.push("LEFT JOIN classes cl ON e.class_id = cl.id");
+      conditions.push("cl.course_id = ?");
+      params.push(course_id);
+    }
+
+    if (class_id) {
+      conditions.push("e.class_id = ?");
+      params.push(class_id);
+    }
+
     if (search) {
-      query += " AND (u.full_name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)";
+      conditions.push("(u.full_name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)");
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
-    if (status) { query += " AND u.status = ?"; params.push(status); }
+
+    if (status) {
+      conditions.push("u.status = ?");
+      params.push(status);
+    }
+
+    if (joins.length > 0) {
+      query += " " + joins.join(" ");
+    }
+
+    query += " WHERE " + conditions.join(" AND ");
     query += " GROUP BY u.id ORDER BY u.created_at DESC";
+
     const [rows] = await pool.query(query, params);
     res.status(200).json(rows);
   } catch (error) {

@@ -55,6 +55,23 @@ export const createClass = async (req, res) => {
     if (!course_id || !teacher_id || !class_name) {
       return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
     }
+
+    if (start_date && end_date && new Date(start_date) > new Date(end_date)) {
+      return res.status(400).json({ message: "Ngày kết thúc lớp phải lớn hơn hoặc bằng ngày bắt đầu" });
+    }
+
+    if (schedules && schedules.length > 0) {
+      for (const s of schedules) {
+        if (s.start_time && s.end_time) {
+          const [h1, m1] = s.start_time.split(":").map(Number);
+          const [h2, m2] = s.end_time.split(":").map(Number);
+          if (h1 * 60 + m1 >= h2 * 60 + m2) {
+            return res.status(400).json({ message: "Giờ kết thúc buổi học phải lớn hơn giờ bắt đầu" });
+          }
+        }
+      }
+    }
+
     const [result] = await pool.query(
       "INSERT INTO classes (course_id, teacher_id, class_name, start_date, end_date, max_students) VALUES (?, ?, ?, ?, ?, ?)",
       [course_id, teacher_id, class_name, start_date || null, end_date || null, max_students || 30]
@@ -81,6 +98,13 @@ export const updateClass = async (req, res) => {
     const [classes] = await pool.query("SELECT * FROM classes WHERE id = ?", [id]);
     if (classes.length === 0) return res.status(404).json({ message: "Không tìm thấy lớp học" });
     const cur = classes[0];
+
+    const finalStartDate = start_date !== undefined ? start_date : cur.start_date;
+    const finalEndDate = end_date !== undefined ? end_date : cur.end_date;
+
+    if (finalStartDate && finalEndDate && new Date(finalStartDate) > new Date(finalEndDate)) {
+      return res.status(400).json({ message: "Ngày kết thúc lớp phải lớn hơn hoặc bằng ngày bắt đầu" });
+    }
 
     await pool.query(
       "UPDATE classes SET course_id=?, teacher_id=?, class_name=?, start_date=?, end_date=?, max_students=? WHERE id=?",
@@ -116,6 +140,16 @@ export const addSchedule = async (req, res) => {
   const { id } = req.params;
   const { day_of_week, start_time, end_time, room } = req.body;
   try {
+    if (!day_of_week || !start_time || !end_time) {
+      return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
+    }
+
+    const [h1, m1] = start_time.split(":").map(Number);
+    const [h2, m2] = end_time.split(":").map(Number);
+    if (h1 * 60 + m1 >= h2 * 60 + m2) {
+      return res.status(400).json({ message: "Giờ kết thúc buổi học phải lớn hơn giờ bắt đầu" });
+    }
+
     await pool.query(
       "INSERT INTO class_schedules (class_id, day_of_week, start_time, end_time, room) VALUES (?, ?, ?, ?, ?)",
       [id, day_of_week, start_time, end_time, room || null]
