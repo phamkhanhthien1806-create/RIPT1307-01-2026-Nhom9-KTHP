@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCoursesPage from "./pages/admin/CoursesPage";
 import AdminClassesPage from "./pages/admin/ClassesPage";
+import AdminStudentsPage from "./pages/admin/StudentsPage";
 import StudentDashboard from "./pages/student/Dashboard";
 import CoursesPage from "./pages/student/CoursesPage";
 import CourseDetailPage from "./pages/student/CourseDetailPage";
@@ -35,6 +36,7 @@ function App() {
                   <Route path="dashboard" element={<AdminDashboard />} />
                   <Route path="courses" element={<AdminCoursesPage />} />
                   <Route path="classes" element={<AdminClassesPage />} />
+                  <Route path="students" element={<AdminStudentsPage />} />
                   <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
                 </Routes>
               </MainLayout>
