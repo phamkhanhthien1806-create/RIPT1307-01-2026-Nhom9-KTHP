@@ -11,6 +11,7 @@ import AdminCoursesPage from "./pages/admin/CoursesPage";
 import AdminClassesPage from "./pages/admin/ClassesPage";
 import AdminStudentsPage from "./pages/admin/StudentsPage";
 import AdminTeachersPage from "./pages/admin/TeachersPage";
+import AdminEnrollmentsPage from "./pages/admin/EnrollmentsPage";
 import StudentDashboard from "./pages/student/Dashboard";
 import CoursesPage from "./pages/student/CoursesPage";
 import CourseDetailPage from "./pages/student/CourseDetailPage";
@@ -44,6 +45,10 @@ function App() {
                   <Route path="classes" element={<AdminClassesPage />} />
                   <Route path="students" element={<AdminStudentsPage />} />
                   <Route path="teachers" element={<AdminTeachersPage />} />
+                  <Route
+                    path="enrollments"
+                    element={<AdminEnrollmentsPage />}
+                  ></Route>
                   <Route
                     path="*"
                     element={<Navigate to="/admin/dashboard" replace />}
