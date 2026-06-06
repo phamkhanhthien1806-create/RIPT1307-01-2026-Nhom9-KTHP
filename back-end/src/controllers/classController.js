@@ -187,10 +187,11 @@ export const addSchedule = async (req, res) => {
 export const getMySchedules = async (req, res) => {
   try {
     const [rows] = await pool.query(`
-      SELECT cs.*, cl.class_name, c.course_name
+      SELECT cs.*, cl.class_name, cl.start_date, cl.end_date, c.course_name, t.full_name AS teacher_name
       FROM class_schedules cs
       JOIN classes cl ON cs.class_id = cl.id
       JOIN courses c ON cl.course_id = c.id
+      JOIN teachers t ON cl.teacher_id = t.id
       JOIN enrollments e ON e.class_id = cl.id
       WHERE e.student_id = ? AND e.status = 'đã duyệt'
       ORDER BY FIELD(cs.day_of_week, 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'), cs.start_time
