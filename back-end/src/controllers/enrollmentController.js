@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import { sendEmail } from "../services/emailService.js";
 
 export const getMyEnrollments = async (req, res) => {
   try {
@@ -57,7 +58,7 @@ export const createEnrollment = async (req, res) => {
     if (existing.length > 0) return res.status(400).json({ message: "Bạn đã đăng ký lớp học này rồi" });
 
     const [classInfo] = await pool.query(`
-      SELECT cl.*, c.tuition_fee,
+      SELECT cl.*, c.tuition_fee, c.course_name,
         (SELECT COUNT(*) FROM enrollments WHERE class_id = cl.id AND status = 'đã duyệt') AS enrolled_count
       FROM classes cl JOIN courses c ON cl.course_id = c.id WHERE cl.id = ?
     `, [class_id]);
@@ -71,11 +72,18 @@ export const createEnrollment = async (req, res) => {
       [student_id, class_id]
     );
 
-    // Tạo bản ghi payment mặc định
     await pool.query(
       "INSERT INTO payments (enrollment_id, payment_method_id, amount, payment_status) VALUES (?, 1, ?, 'chờ thanh toán')",
       [result.insertId, classInfo[0].tuition_fee]
     );
+
+    const emailSubject = "Đăng ký lớp học thành công";
+    const emailHtml = `<p>Chào bạn,</p>
+<p>Bạn đã đăng ký thành công lớp học <strong>${classInfo[0].class_name}</strong> (Khóa học: ${classInfo[0].course_name}).</p>
+<p>Trạng thái đơn đăng ký hiện tại: <strong>Chờ duyệt</strong>.</p>
+<p>Hệ thống sẽ cập nhật và thông báo lại cho bạn khi đơn đăng ký được duyệt.</p>
+<p>Trân trọng,<br>Tata English Center</p>`;
+    sendEmail(req.user.email, emailSubject, emailHtml);
 
     res.status(201).json({ message: "Đăng ký lớp học thành công, đang chờ duyệt", enrollmentId: result.insertId });
   } catch (error) {
@@ -101,16 +109,44 @@ export const updateEnrollmentStatus = async (req, res) => {
       );
     }
 
-    const [enrollment] = await pool.query("SELECT student_id, class_id FROM enrollments WHERE id = ?", [id]);
-    const [cls] = await pool.query("SELECT class_name FROM classes WHERE id = ?", [enrollment[0].class_id]);
+    const [enrollment] = await pool.query(`
+      SELECT e.student_id, u.email AS student_email, u.full_name AS student_name,
+             cl.class_name, c.course_name
+      FROM enrollments e
+      JOIN users u ON e.student_id = u.id
+      JOIN classes cl ON e.class_id = cl.id
+      JOIN courses c ON cl.course_id = c.id
+      WHERE e.id = ?
+    `, [id]);
+
+    const student_email = enrollment[0].student_email;
+    const student_name = enrollment[0].student_name;
+    const class_name = enrollment[0].class_name;
+    const course_name = enrollment[0].course_name;
+
     let title = "", message = "";
     if (status === "đã duyệt") {
       title = "Đăng ký được duyệt";
-      message = `Đơn đăng ký lớp ${cls[0].class_name} của bạn đã được duyệt thành công.`;
+      message = `Đơn đăng ký lớp ${class_name} của bạn đã được duyệt thành công.`;
+
+      const emailSubject = "Đăng ký lớp học của bạn đã được duyệt";
+      const emailHtml = `<p>Chào ${student_name},</p>
+<p>Đơn đăng ký lớp học <strong>${class_name}</strong> (Khóa học: ${course_name}) của bạn đã được duyệt thành công.</p>
+<p>Vui lòng tiến hành hoàn thành học phí nếu chưa thanh toán.</p>
+<p>Trân trọng,<br>Tata English Center</p>`;
+      sendEmail(student_email, emailSubject, emailHtml);
     } else if (status === "từ chối") {
       title = "Đăng ký bị từ chối";
-      message = `Rất tiếc, đơn đăng ký lớp ${cls[0].class_name} của bạn đã bị từ chối.`;
+      message = `Rất tiếc, đơn đăng ký lớp ${class_name} của bạn đã bị từ chối.`;
+
+      const emailSubject = "Đơn đăng ký lớp học bị từ chối";
+      const emailHtml = `<p>Chào ${student_name},</p>
+<p>Rất tiếc, đơn đăng ký lớp học <strong>${class_name}</strong> (Khóa học: ${course_name}) của bạn đã bị từ chối.</p>
+<p>Trạng thái hóa đơn học phí tương ứng đã được chuyển thành <strong>Thất bại</strong>.</p>
+<p>Trân trọng,<br>Tata English Center</p>`;
+      sendEmail(student_email, emailSubject, emailHtml);
     }
+
     if (title) {
       await pool.query(
         "INSERT INTO notifications (user_id, title, message) VALUES (?, ?, ?)",

@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import { sendEmail } from "../services/emailService.js";
 
 export const getMyPayments = async (req, res) => {
   try {
@@ -55,6 +56,35 @@ export const updatePaymentStatus = async (req, res) => {
       "UPDATE payments SET payment_status=?, payment_date=?, payment_method_id=COALESCE(?,payment_method_id) WHERE id=?",
       [payment_status, payment_date, payment_method_id || null, id]
     );
+
+    const [paymentInfo] = await pool.query(`
+      SELECT p.*, u.email AS student_email, u.full_name AS student_name,
+             cl.class_name, c.course_name, pm.method_name
+      FROM payments p
+      JOIN enrollments e ON p.enrollment_id = e.id
+      JOIN users u ON e.student_id = u.id
+      JOIN classes cl ON e.class_id = cl.id
+      JOIN courses c ON cl.course_id = c.id
+      LEFT JOIN payment_methods pm ON p.payment_method_id = pm.id
+      WHERE p.id = ?
+    `, [id]);
+
+    if (paymentInfo.length > 0) {
+      const p = paymentInfo[0];
+      const emailSubject = `Cập nhật trạng thái học phí: ${p.payment_status.toUpperCase()}`;
+      const emailHtml = `<p>Chào ${p.student_name},</p>
+<p>Hệ thống vừa cập nhật trạng thái hóa đơn học phí của bạn cho lớp học <strong>${p.class_name}</strong> (Khóa học: ${p.course_name}).</p>
+<p>Thông tin hóa đơn chi tiết:</p>
+<ul>
+  <li>Số tiền: <strong>${Number(p.amount).toLocaleString('vi-VN')} VND</strong></li>
+  <li>Phương thức: <strong>${p.method_name || "N/A"}</strong></li>
+  <li>Trạng thái thanh toán: <strong>${p.payment_status}</strong></li>
+  ${p.payment_date ? `<li>Ngày thanh toán: <strong>${new Date(p.payment_date).toLocaleString('vi-VN')}</strong></li>` : ''}
+</ul>
+<p>Trân trọng,<br>Tata English Center</p>`;
+      sendEmail(p.student_email, emailSubject, emailHtml);
+    }
+
     res.status(200).json({ message: "Cập nhật trạng thái thanh toán thành công" });
   } catch (error) {
     res.status(500).json({ message: "Lỗi hệ thống", error: error.message });

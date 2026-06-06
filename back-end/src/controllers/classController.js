@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import { sendEmail } from "../services/emailService.js";
 
 export const getClasses = async (req, res) => {
   try {
@@ -118,6 +119,29 @@ export const updateClass = async (req, res) => {
         id,
       ]
     );
+
+    const [students] = await pool.query(`
+      SELECT u.email, u.full_name, cl.class_name, c.course_name
+      FROM enrollments e
+      JOIN users u ON e.student_id = u.id
+      JOIN classes cl ON e.class_id = cl.id
+      JOIN courses c ON cl.course_id = c.id
+      WHERE e.class_id = ? AND e.status = 'đã duyệt'
+    `, [id]);
+
+    if (students.length > 0) {
+      const className = students[0].class_name;
+      const courseName = students[0].course_name;
+      const emailSubject = `Cập nhật thông tin lớp học: ${className}`;
+      for (const student of students) {
+        const emailHtml = `<p>Chào ${student.full_name},</p>
+<p>Thông tin của lớp học <strong>${className}</strong> (Khóa học: ${courseName}) vừa được quản trị viên cập nhật.</p>
+<p>Vui lòng đăng nhập vào ứng dụng để xem chi tiết lịch học hoặc thông tin mới nhất.</p>
+<p>Trân trọng,<br>Tata English Center</p>`;
+        sendEmail(student.email, emailSubject, emailHtml);
+      }
+    }
+
     res.status(200).json({ message: "Cập nhật lớp học thành công" });
   } catch (error) {
     res.status(500).json({ message: "Lỗi hệ thống", error: error.message });
