@@ -72,23 +72,28 @@ const Login: React.FC = () => {
         bodyStyle={{ padding: "40px 30px" }}
       >
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <div
-            style={{
-              width: "60px",
-              height: "60px",
-              borderRadius: "50%",
-              backgroundColor: "#e6f7ff",
-              display: "inline-flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: "16px",
-            }}
-          >
-            <span style={{ fontSize: "28px", color: "#1890ff", fontWeight: "bold" }}>T</span>
-          </div>
-          <Title level={3} style={{ margin: 0, color: "#1890ff" }}>
-            Tata English Center
-          </Title>
+          <Link to="/" style={{ display: "inline-block", textDecoration: "none" }}>
+            <div
+              style={{
+                width: "60px",
+                height: "60px",
+                borderRadius: "50%",
+                backgroundColor: "#e6f7ff",
+                display: "inline-flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: "16px",
+                transition: "transform 0.3s ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.08)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              <span style={{ fontSize: "28px", color: "#1890ff", fontWeight: "bold" }}>T</span>
+            </div>
+            <Title level={3} style={{ margin: 0, color: "#1890ff" }}>
+              Tata English Center
+            </Title>
+          </Link>
           <Paragraph type="secondary" style={{ marginTop: "4px" }}>
             Hệ thống quản lý đào tạo & học viên
           </Paragraph>
@@ -122,6 +127,11 @@ const Login: React.FC = () => {
             <span style={{ color: "rgba(0,0,0,0.45)" }}>Chưa có tài khoản học viên? </span>
             <Link to="/register" style={{ fontWeight: 500 }}>
               Đăng ký ngay
+            </Link>
+          </div>
+          <div style={{ textAlign: "center", marginTop: "16px", borderTop: "1px solid #f0f0f0", paddingTop: "16px" }}>
+            <Link to="/" style={{ color: "rgba(0,0,0,0.45)", fontSize: "14px", fontWeight: 500 }}>
+              ← Quay lại trang chủ
             </Link>
           </div>
         </Form>

@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import LandingPage from "./pages/LandingPage";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCoursesPage from "./pages/admin/CoursesPage";
 import AdminClassesPage from "./pages/admin/ClassesPage";
@@ -86,8 +87,11 @@ function App() {
           }
         />
 
+        {/* Landing Page */}
+        <Route path="/" element={<LandingPage />} />
+
         {/* Default route */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
