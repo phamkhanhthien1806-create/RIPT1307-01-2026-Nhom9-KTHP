@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Typography, Spin, message, Card, Empty } from "antd";
+import { Table, Tag, Typography, Spin, message, Card, Empty, Button, Space } from "antd";
 import { CreditCardOutlined } from "@ant-design/icons";
+import { useSearchParams } from "react-router-dom";
 import api from "../../utils/api";
+import PaymentModal from "../../components/PaymentModal";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -14,21 +16,37 @@ const paymentStatusColors: Record<string, string> = {
 const MyPaymentsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [payments, setPayments] = useState<any[]>([]);
+  const [searchParams] = useSearchParams();
+
+  // Payment modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPaymentId, setSelectedPaymentId] = useState<number | null>(null);
+  const [selectedAmount, setSelectedAmount] = useState<number>(0);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/payments/my");
+      setPayments(res.data);
+    } catch (err) {
+      message.error("Lỗi tải thông tin học phí");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get("/payments/my");
-        setPayments(res.data);
-      } catch (err) {
-        message.error("Lỗi tải thông tin học phí");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const status = searchParams.get("status");
+    if (status === "success") {
+      message.success("Thanh toán học phí thành công! Hệ thống đang xử lý kích hoạt lớp học.");
+    } else if (status === "cancelled") {
+      message.warning("Giao dịch thanh toán đã bị hủy.");
+    }
+  }, [searchParams]);
 
   const columns = [
     {
@@ -78,6 +96,28 @@ const MyPaymentsPage: React.FC = () => {
       key: "payment_date",
       render: (d: string) =>
         d ? new Date(d).toLocaleDateString("vi-VN") : <Text type="secondary">—</Text>,
+    },
+    {
+      title: "Thao tác",
+      key: "action",
+      width: 150,
+      render: (_: any, record: any) => (
+        <Space size="middle">
+          {record.payment_status === "chờ thanh toán" && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                setSelectedPaymentId(record.id);
+                setSelectedAmount(parseFloat(record.amount));
+                setModalOpen(true);
+              }}
+            >
+              Thanh toán
+            </Button>
+          )}
+        </Space>
+      ),
     },
   ];
 
@@ -137,8 +177,23 @@ const MyPaymentsPage: React.FC = () => {
           />
         )}
       </Card>
+
+      {/* Payment Selection Modal */}
+      {selectedPaymentId !== null && (
+        <PaymentModal
+          paymentId={selectedPaymentId}
+          amount={selectedAmount}
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedPaymentId(null);
+            fetchData(); // Refresh data to check updated payment status
+          }}
+        />
+      )}
     </div>
   );
 };
 
 export default MyPaymentsPage;
+
