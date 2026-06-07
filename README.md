@@ -4,14 +4,55 @@ Chào mừng bạn đến với **Tata English Center** - giải pháp web toàn
 
 ---
 
-## 🚀 Các Tính Nông Nổi Bật
+## 🌐 Cổng Kết Nối Trực Tuyến
+
+- **Cổng thông tin Web Portal (Production):** [https://tata-english-center.netlify.app/](https://tata-english-center.netlify.app/)
+
+---
+
+## 📊 Công Nghệ Sử Dụng & Huy Hiệu
+
+[![Production Web](https://img.shields.io/badge/Production%20Web-Live%20Demo-success?style=for-the-badge&logo=netlify&logoColor=white)](https://tata-english-center.netlify.app/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Ant Design](https://img.shields.io/badge/Ant%20Design-0170FE?style=for-the-badge&logo=antdesign&logoColor=white)](https://ant.design/)
+[![Redux](https://img.shields.io/badge/Redux-764ABC?style=for-the-badge&logo=redux&logoColor=white)](https://redux-toolkit.js.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-00758F?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+
+Hệ thống được xây dựng trên các công nghệ hiện đại, đảm bảo tính ổn định và khả năng mở rộng tốt:
+
+| Thành phần        | Công nghệ / Thư viện       | Mô tả                                                                      |
+| :---------------- | :------------------------- | :------------------------------------------------------------------------- |
+| **Frontend**      | ReactJS (v18) + TypeScript | Thư viện xây dựng giao diện người dùng và định kiểu kiểu dữ liệu chặt chẽ. |
+|                   | Vite (v8)                  | Công cụ build frontend thế hệ mới siêu nhanh.                              |
+|                   | Ant Design (v4)            | Bộ thư viện UI component chuyên nghiệp, trực quan.                         |
+|                   | Redux Toolkit              | Quản lý state toàn cục của ứng dụng (Auth, User...).                       |
+|                   | React Router DOM (v7)      | Quản lý định tuyến và luồng chuyển trang.                                  |
+|                   | Axios                      | Thư viện gọi các API Restful từ backend.                                   |
+|                   | Day.js                     | Thư viện xử lý và định dạng thời gian.                                     |
+| **Backend**       | Node.js + ExpressJS        | Môi trường chạy và framework xây dựng Restful APIs.                        |
+|                   | MySQL2                     | Driver kết nối CSDL MySQL hiệu năng cao hỗ trợ Promise.                    |
+|                   | JWT (JSON Web Tokens)      | Cơ chế xác thực phân quyền an toàn giữa Client và Server.                  |
+|                   | bcrypt                     | Băm bảo mật mật khẩu trước khi lưu vào cơ sở dữ liệu.                      |
+|                   | Multer                     | Xử lý upload tài liệu, file và hình ảnh đại diện lên server.               |
+|                   | Nodemailer                 | Gửi thư điện tử qua giao thức SMTP.                                        |
+| **Cơ sở dữ liệu** | MySQL (8.0+)               | Hệ quản trị cơ sở dữ liệu quan hệ lưu trữ dữ liệu tập trung.               |
+
+---
+
+## 🚀 Các Tính Năng Nổi Bật
 
 ### 👨‍🎓 Dành Cho Học Viên (Student Portal)
+
 Học viên sau khi đăng nhập có thể quản lý lộ trình học tập trực quan:
+
 - **Đăng ký tài khoản & Đăng nhập:** Xác thực danh tính an toàn với JWT và bcrypt.
 - **Quản lý thông tin cá nhân (Profile):** Cập nhật ảnh đại diện (avatar), thông tin liên hệ và lịch sử cá nhân.
 - **Khám phá Khóa học:** Xem thông tin chi tiết về các khóa học (mục tiêu, trình độ, thời lượng, học phí).
-- **Ghi danh & Đăng ký lớp học:** Gửi yêu cầu đăng ký lớp học và theo dõi trạng thái phê duyệt (*Chờ duyệt / Đã duyệt / Từ chối*).
+- **Ghi danh & Đăng ký lớp học:** Gửi yêu cầu đăng ký lớp học và theo dõi trạng thái phê duyệt (_Chờ duyệt / Đã duyệt / Từ chối_).
 - **Thanh toán học phí trực tuyến (Simulated Gateway):** Hỗ trợ nhiều hình thức thanh toán mô phỏng bao gồm:
   - **Chuyển khoản VietQR:** Tự động tạo mã QR động theo đúng số tiền học phí và nội dung chuyển khoản sử dụng API VietQR.
   - **Ví điện tử MoMo:** Giả lập thanh toán qua MoMo.
@@ -26,7 +67,9 @@ Học viên sau khi đăng nhập có thể quản lý lộ trình học tập t
 - **Hộp thư thông báo (Notifications):** Nhận các cập nhật về trạng thái duyệt học phí, thay đổi phòng học, hoặc cập nhật điểm số.
 
 ### 👩‍💼 Dành Cho Quản Trị Viên (Admin Portal)
+
 Hỗ trợ đắc lực cho công việc vận hành và quản lý của trung tâm:
+
 - **Trực quan hóa Dữ liệu (Dashboard):**
   - Thống kê tổng số học viên, số lượng khóa học, lớp học và các yêu cầu ghi danh đang chờ xử lý.
   - Biểu đồ doanh thu trực quan theo từng tháng/năm.
@@ -44,34 +87,12 @@ Hỗ trợ đắc lực cho công việc vận hành và quản lý của trung 
 - **Quản lý & Gửi thông báo:** Soạn thảo và gửi thông báo chung hoặc riêng biệt tới từng người dùng.
 
 ### 🤖 Hệ Thống Dịch Vụ Tự Động (Background Services)
+
 - **Gửi Email tự động (Nodemailer):** Tự động gửi email thông báo cho học viên khi:
   - Đăng ký tài khoản thành công.
   - Thay đổi trạng thái học phí (xác nhận đóng học phí thành công).
   - Cập nhật lịch học đột xuất.
 - **Nhắc nhở lịch học trước 30 phút (Reminder Service):** Hệ thống chạy nền tự động quét lịch học mỗi phút 1 lần. Nếu phát hiện lớp học sắp diễn ra sau 30 phút, hệ thống tự động gửi thông báo in-app nhắc nhở học viên chuẩn bị lên lớp.
-
----
-
-## 🛠️ Công Nghệ Sử Dụng
-
-Hệ thống được xây dựng trên các công nghệ hiện đại, đảm bảo tính ổn định và khả năng mở rộng tốt:
-
-| Thành phần | Công nghệ / Thư viện | Mô tả |
-| :--- | :--- | :--- |
-| **Frontend** | ReactJS (v18) + TypeScript | Thư viện xây dựng giao diện người dùng và định kiểu kiểu dữ liệu chặt chẽ. |
-| | Vite (v8) | Công cụ build frontend thế hệ mới siêu nhanh. |
-| | Ant Design (v4) | Bộ thư viện UI component chuyên nghiệp, trực quan. |
-| | Redux Toolkit | Quản lý state toàn cục của ứng dụng (Auth, User...). |
-| | React Router DOM (v7) | Quản lý định tuyến và luồng chuyển trang. |
-| | Axios | Thư viện gọi các API Restful từ backend. |
-| | Day.js | Thư viện xử lý và định dạng thời gian. |
-| **Backend** | Node.js + ExpressJS | Môi trường chạy và framework xây dựng Restful APIs. |
-| | MySQL2 | Driver kết nối CSDL MySQL hiệu năng cao hỗ trợ Promise. |
-| | JWT (JSON Web Tokens) | Cơ chế xác thực phân quyền an toàn giữa Client và Server. |
-| | bcrypt | Băm bảo mật mật khẩu trước khi lưu vào cơ sở dữ liệu. |
-| | Multer | Xử lý upload tài liệu, file và hình ảnh đại diện lên server. |
-| | Nodemailer | Gửi thư điện tử qua giao thức SMTP. |
-| **Cơ sở dữ liệu** | MySQL (8.0+) | Hệ quản trị cơ sở dữ liệu quan hệ lưu trữ dữ liệu tập trung. |
 
 ---
 
@@ -118,7 +139,7 @@ BTL_THLTW/
 
 ## 🗄️ Thiết Kế Cơ Sở Dữ Liệu
 
-Hệ thống sử dụng cơ sở dữ liệu có tên `english_center_management`. 
+Hệ thống sử dụng cơ sở dữ liệu có tên `english_center_management`.
 
 ### Sơ Đồ Quan Hệ Thực Thể (ERD)
 
@@ -143,25 +164,26 @@ erDiagram
 
 ### Các Bảng Trong Cơ Sở Dữ Liệu
 
-| Tên Bảng | Mô Tả Chức Năng |
-| :--- | :--- |
-| `users` | Lưu trữ tài khoản người dùng: họ tên, email, mật khẩu băm, SĐT, vai trò (`quản trị viên` / `học viên`), trạng thái (`hoạt động` / `bị khóa`). |
-| `student_profiles` | Hồ sơ chi tiết của học viên: ngày sinh, giới tính, địa chỉ, đường dẫn ảnh đại diện. |
-| `course_categories` | Phân loại khóa học (như TOEIC, IELTS, Tiếng Anh Giao Tiếp...). |
-| `courses` | Thông tin khóa học: tên khóa, cấp độ yêu cầu, học phí định mức, thời lượng. |
-| `teachers` | Danh sách thông tin giảng viên tại trung tâm. |
-| `classes` | Thông tin lớp học được mở từ các khóa học, liên kết với giảng viên đứng lớp. |
-| `class_schedules` | Thời khóa biểu của từng lớp học trong tuần (Thứ mấy, giờ học, phòng học). |
-| `enrollments` | Danh sách đăng ký lớp học của học viên và trạng thái phê duyệt. |
-| `payment_methods` | Các hình thức thanh toán được hỗ trợ (tiền mặt, chuyển khoản, ví điện tử...). |
-| `payments` | Hóa đơn học phí chi tiết gắn với từng đăng ký của học viên. |
-| `lessons` | Danh sách bài học của từng lớp để quản lý giáo trình. |
-| `lesson_videos` | Các video bài giảng đi kèm bài học (dưới dạng URL nhúng). |
-| `lesson_materials` | File tài liệu đính kèm bài học để tải về. |
-| `scores` | Điểm số đánh giá học viên tại từng lớp học kèm nhận xét. |
-| `notifications` | Các thông báo hệ thống gửi đến cho từng cá nhân người dùng. |
+| Tên Bảng            | Mô Tả Chức Năng                                                                                                                               |
+| :------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`             | Lưu trữ tài khoản người dùng: họ tên, email, mật khẩu băm, SĐT, vai trò (`quản trị viên` / `học viên`), trạng thái (`hoạt động` / `bị khóa`). |
+| `student_profiles`  | Hồ sơ chi tiết của học viên: ngày sinh, giới tính, địa chỉ, đường dẫn ảnh đại diện.                                                           |
+| `course_categories` | Phân loại khóa học (như TOEIC, IELTS, Tiếng Anh Giao Tiếp...).                                                                                |
+| `courses`           | Thông tin khóa học: tên khóa, cấp độ yêu cầu, học phí định mức, thời lượng.                                                                   |
+| `teachers`          | Danh sách thông tin giảng viên tại trung tâm.                                                                                                 |
+| `classes`           | Thông tin lớp học được mở từ các khóa học, liên kết với giảng viên đứng lớp.                                                                  |
+| `class_schedules`   | Thời khóa biểu của từng lớp học trong tuần (Thứ mấy, giờ học, phòng học).                                                                     |
+| `enrollments`       | Danh sách đăng ký lớp học của học viên và trạng thái phê duyệt.                                                                               |
+| `payment_methods`   | Các hình thức thanh toán được hỗ trợ (tiền mặt, chuyển khoản, ví điện tử...).                                                                 |
+| `payments`          | Hóa đơn học phí chi tiết gắn với từng đăng ký của học viên.                                                                                   |
+| `lessons`           | Danh sách bài học của từng lớp để quản lý giáo trình.                                                                                         |
+| `lesson_videos`     | Các video bài giảng đi kèm bài học (dưới dạng URL nhúng).                                                                                     |
+| `lesson_materials`  | File tài liệu đính kèm bài học để tải về.                                                                                                     |
+| `scores`            | Điểm số đánh giá học viên tại từng lớp học kèm nhận xét.                                                                                      |
+| `notifications`     | Các thông báo hệ thống gửi đến cho từng cá nhân người dùng.                                                                                   |
 
 ### Ràng Buộc Nghiệp Vụ Quan Trọng
+
 - **Tránh trùng lặp ghi danh:** Học viên chỉ có thể đăng ký tối đa một lần vào cùng một lớp học (`UNIQUE(student_id, class_id)`).
 - **Hóa đơn duy nhất:** Mỗi lượt đăng ký lớp học chỉ phát sinh tối đa một hóa đơn học phí (`enrollment_id` là khóa duy nhất trong bảng `payments`).
 - **Giới hạn điểm số:** Thang điểm bắt buộc nằm trong khoảng từ `0` đến `10` (`CHECK (score >= 0 AND score <= 10)`).
@@ -172,6 +194,7 @@ erDiagram
 ## ⚙️ Hướng Dẫn Cài Đặt Và Chạy Dự Án
 
 ### Yêu Cầu Hệ Thống
+
 - Đã cài đặt **Node.js** (Khuyên dùng bản LTS từ v18 trở lên).
 - Đã cài đặt **MySQL Server** (v8.0 trở lên) hoặc XAMPP.
 - Trình quản lý gói **npm** (tự động đi kèm Node.js).
@@ -179,16 +202,18 @@ erDiagram
 ---
 
 ### Bước 1: Thiết Lập Cơ Sở Dữ Liệu MySQL
+
 1. Khởi động MySQL Server (bằng MySQL Command Line Client, MySQL Workbench hoặc Control Panel XAMPP).
 2. Tạo CSDL và nạp dữ liệu mẫu bằng cách chạy script SQL từ file `database/data.sql`:
    ```bash
    mysql -u root -p < database/data.sql
    ```
-   *(Hoặc bạn có thể mở MySQL Workbench / phpMyAdmin, tạo CSDL tên `english_center_management` rồi copy nội dung file `data.sql` và thực thi).*
+   _(Hoặc bạn có thể mở MySQL Workbench / phpMyAdmin, tạo CSDL tên `english_center_management` rồi copy nội dung file `data.sql` và thực thi)._
 
 ---
 
 ### Bước 2: Cài Đặt & Chạy Backend
+
 1. Di chuyển vào thư mục backend:
    ```bash
    cd back-end
@@ -212,11 +237,12 @@ erDiagram
    ```bash
    npm run dev
    ```
-   *Server backend mặc định sẽ lắng nghe tại cổng: `http://localhost:5000`*
+   _Server backend mặc định sẽ lắng nghe tại cổng: `http://localhost:5000`_
 
 ---
 
 ### Bước 3: Cài Đặt & Chạy Frontend
+
 1. Mở một cửa sổ terminal mới và di chuyển vào thư mục frontend:
    ```bash
    cd front-end
@@ -229,7 +255,7 @@ erDiagram
    ```bash
    npm run dev
    ```
-   *Ứng dụng sẽ tự động mở trên trình duyệt tại địa chỉ: `http://localhost:5173`*
+   _Ứng dụng sẽ tự động mở trên trình duyệt tại địa chỉ: `http://localhost:5173`_
 
 ---
 
@@ -237,18 +263,17 @@ erDiagram
 
 Để thuận tiện cho việc kiểm thử các tính năng phân quyền giữa Quản trị viên và Học viên, bạn có thể đăng nhập bằng các tài khoản mẫu có sẵn trong CSDL:
 
-| Vai Trò | Email Đăng Nhập | Mật Khẩu Mặc Định |
-| :--- | :--- | :--- |
-| **Quản Trị Viên (Admin)** | `admin@englishcenter.edu.vn` | `password` |
-| **Học Viên (Student)** | `student2@gmail.com` | `password` |
-| | `student3@gmail.com` *(đến `student26@gmail.com`)* | `password` |
+| Vai Trò                   | Email Đăng Nhập                                    | Mật Khẩu Mặc Định |
+| :------------------------ | :------------------------------------------------- | :---------------- |
+| **Quản Trị Viên (Admin)** | `admin@englishcenter.edu.vn`                       | `password`        |
+| **Học Viên (Student)**    | `student2@gmail.com`                               | `password`        |
+|                           | `student3@gmail.com` _(đến `student26@gmail.com`)_ | `password`        |
 
 ---
 
 ## 💡 Ghi Chú Phát Triển Trải Nghiệm (Aesthetics & Design)
+
 - **Thiết kế Giao diện:** Giao diện sử dụng bộ màu hiện đại, tối ưu trải nghiệm của Ant Design.
 - **Trực quan hóa Dữ liệu:** Dashboard sử dụng các biểu đồ SVG tinh gọn để trực quan hóa doanh thu và các chỉ số hoạt động.
 - **Mô phỏng Thanh toán:** Cho phép người dùng trải nghiệm luồng thanh toán hoàn chỉnh bằng cách hiển thị mã QR trực quan qua API VietQR thực tế hoặc các nút mô phỏng kết quả giao dịch thành công/thất bại nhanh chóng.
 - **Xử lý tài liệu:** Các tài liệu bài học và avatar học viên được quản lý trực tiếp qua Middleware Multer, lưu trữ an toàn trong thư mục `/uploads`.
-
-
