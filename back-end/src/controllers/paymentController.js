@@ -1,5 +1,7 @@
 import pool from "../config/db.js";
 import { sendEmail } from "../services/emailService.js";
+import payos from "../config/payos.js";
+
 
 export const getMyPayments = async (req, res) => {
   try {
@@ -100,6 +102,95 @@ export const getPaymentMethods = async (req, res) => {
   }
 };
 
+// ----------------------------------------------------
+// 1. CỔNG THANH TOÁN PAYOS (VIETQR THẬT)
+// ----------------------------------------------------
+export const createPayOSLink = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await pool.query(`
+      SELECT p.*, cl.class_name, c.course_name
+      FROM payments p
+      JOIN enrollments e ON p.enrollment_id = e.id
+      JOIN classes cl ON e.class_id = cl.id
+      JOIN courses c ON cl.course_id = c.id
+      WHERE p.id = ?
+    `, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy thông tin thanh toán" });
+    }
+
+    const payment = rows[0];
+    if (payment.payment_status === "đã thanh toán") {
+      return res.status(400).json({ message: "Hóa đơn này đã được thanh toán" });
+    }
+
+    const orderCode = Number(payment.id);
+    const amount = Math.round(payment.amount);
+    const description = `HP ${payment.id}`.substring(0, 25);
+
+    const paymentData = {
+      orderCode: orderCode,
+      amount: amount,
+      description: description,
+      cancelUrl: `${process.env.FRONTEND_URL}/student/payments?status=cancelled`,
+      returnUrl: `${process.env.FRONTEND_URL}/student/payments?status=success`,
+    };
+
+    const paymentLinkRes = await payos.paymentRequests.create(paymentData);
+    res.status(200).json({ checkoutUrl: paymentLinkRes.checkoutUrl });
+  } catch (error) {
+    console.error("Lỗi tạo link PayOS chi tiết:", error);
+    res.status(500).json({ message: "Lỗi tạo link PayOS", error: error.message, details: error.response?.data || error });
+  }
+};
+
+export const handlePayOSWebhook = async (req, res) => {
+  try {
+    const webhookData = req.body;
+    const verifiedData = payos.webhooks.verify(webhookData);
+
+    if (verifiedData.code === "00" || webhookData.success === true) {
+      const paymentId = verifiedData.orderCode;
+      
+      const [check] = await pool.query("SELECT payment_status FROM payments WHERE id = ?", [paymentId]);
+      if (check.length > 0 && check[0].payment_status !== "đã thanh toán") {
+        const payment_date = new Date();
+        // Cập nhật CSDL payments
+        await pool.query(
+          "UPDATE payments SET payment_status = 'đã thanh toán', payment_date = ?, payment_method_id = 2 WHERE id = ?",
+          [payment_date, paymentId]
+        );
+
+        // Duyệt enrollment
+        const [paymentDetails] = await pool.query("SELECT enrollment_id FROM payments WHERE id = ?", [paymentId]);
+        if (paymentDetails.length > 0) {
+          const enrollmentId = paymentDetails[0].enrollment_id;
+          await pool.query("UPDATE enrollments SET status = 'đã duyệt' WHERE id = ?", [enrollmentId]);
+          
+          // Gửi thông báo hệ thống
+          const [enrollInfo] = await pool.query("SELECT student_id FROM enrollments WHERE id = ?", [enrollmentId]);
+          if (enrollInfo.length > 0) {
+            await pool.query(
+              "INSERT INTO notifications (user_id, title, message) VALUES (?, 'Đăng ký được duyệt', 'Đăng ký lớp học của bạn đã được duyệt thành công sau khi hoàn tất học phí.')",
+              [enrollInfo[0].student_id]
+            );
+          }
+        }
+
+        // Gửi email xác nhận
+        await sendSuccessEmail(paymentId, payment_date, "Chuyển khoản (VietQR tự động PayOS)");
+      }
+    }
+    res.status(200).json({ message: "Success" });
+  } catch (error) {
+    console.error("Lỗi Webhook PayOS:", error.message);
+    res.status(400).json({ message: "Invalid webhook data", error: error.message });
+  }
+};
+
+
 async function sendSuccessEmail(paymentId, paymentDate, methodName) {
   try {
     const [paymentInfo] = await pool.query(`
@@ -171,9 +262,7 @@ export const simulateSuccessPayment = async (req, res) => {
     }
 
     let methodName = "Thanh toán trực tuyến (Mô phỏng)";
-    if (Number(payment_method_id) === 2) {
-      methodName = "Chuyển khoản VietQR (Mô phỏng)";
-    } else if (Number(payment_method_id) === 3) {
+    if (Number(payment_method_id) === 3) {
       methodName = "Ví điện tử MoMo (Mô phỏng)";
     } else if (Number(payment_method_id) === 4) {
       methodName = "Thẻ ngân hàng VNPAY (Mô phỏng)";
