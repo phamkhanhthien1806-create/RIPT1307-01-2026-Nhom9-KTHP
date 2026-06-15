@@ -42,7 +42,7 @@ export const getStudents = async (req, res) => {
     }
 
     query += " WHERE " + conditions.join(" AND ");
-    query += " GROUP BY u.id ORDER BY u.created_at DESC";
+    query += " GROUP BY u.id, u.full_name, u.email, u.phone, u.status, u.created_at, sp.birthday, sp.gender, sp.avatar ORDER BY u.created_at DESC";
 
     const [rows] = await pool.query(query, params);
     res.status(200).json(rows);
